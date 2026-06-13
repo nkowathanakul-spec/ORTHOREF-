@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OrthoRef · Orthopaedic Trauma Reference Library</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --accent:#c0392b;
+  --teal:#1a7a6e;
+  --paper:#f8f5f0;
+  --ink:#1a1814;
+  --muted:#5c5850;
+  --rule:#d4cec6;
+  --highlight:#fff7e6;
+  --warn:#8b4513;
+  --surface:#f0ece4;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:"Source Serif 4",Georgia,serif;
+  background:var(--paper);
+  color:var(--ink);
+  font-size:1.05rem;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+}
+.container{max-width:1180px;margin:0 auto;padding:0 36px}
+
+/* ---------- HEADER ---------- */
+header{
+  background:var(--ink);
+  color:var(--paper);
+  padding:60px 0 50px;
+  border-bottom:6px double #4a3d2e;
+}
+header .container{display:grid;grid-template-columns:1fr auto;gap:40px;align-items:end}
+.eyebrow{
+  font-family:"DM Mono",monospace;
+  font-size:0.75rem;
+  letter-spacing:0.22em;
+  text-transform:uppercase;
+  color:#a89478;
+  margin-bottom:18px;
+}
+h1{
+  font-family:"Playfair Display",Georgia,serif;
+  font-style:italic;
+  font-weight:900;
+  font-size:4.5rem;
+  line-height:0.95;
+  letter-spacing:-0.015em;
+  margin-bottom:14px;
+}
+h1 .accent{color:#d68b6e}
+.subtitle{
+  font-family:"Source Serif 4",Georgia,serif;
+  font-style:italic;
+  font-size:1.18rem;
+  color:#c5b89c;
+  max-width:560px;
+  line-height:1.55;
+  font-weight:400;
+}
+.stats{
+  display:flex;
+  gap:30px;
+  align-items:flex-end;
+}
+.stat{text-align:right}
+.stat-num{
+  font-family:"Playfair Display",serif;
+  font-weight:700;
+  font-size:3.4rem;
+  color:#d68b6e;
+  line-height:1;
+}
+.stat-label{
+  font-family:"DM Mono",monospace;
+  font-size:0.7rem;
+  letter-spacing:0.16em;
+  text-transform:uppercase;
+  color:#a89478;
+  margin-top:6px;
+}
+
+/* ---------- INTRO STRIP ---------- */
+.intro-strip{
+  background:var(--surface);
+  border-bottom:1px solid var(--rule);
+  padding:28px 0;
+}
+.intro-strip .container{
+  display:flex;
+  align-items:center;
+  gap:24px;
+  flex-wrap:wrap;
+}
+.intro-text{
+  flex:1;
+  min-width:280px;
+  font-size:1.02rem;
+  color:var(--muted);
+  font-style:italic;
+}
+.intro-text strong{color:var(--ink);font-style:normal;font-weight:600}
+.source-tags{display:flex;gap:10px;flex-wrap:wrap}
+.source-tag{
+  font-family:"DM Mono",monospace;
+  font-size:0.72rem;
+  letter-spacing:0.1em;
+  text-transform:uppercase;
+  background:var(--ink);
+  color:var(--paper);
+  padding:8px 14px;
+  border-radius:2px;
+  white-space:nowrap;
+}
+.source-tag.accent{background:var(--accent)}
+
+/* ---------- MAIN ---------- */
+main{padding:60px 0 80px}
+
+.region-block{margin-bottom:60px}
+.region-header{
+  display:flex;
+  align-items:baseline;
+  gap:22px;
+  padding-bottom:18px;
+  margin-bottom:26px;
+  border-bottom:2px solid var(--ink);
+}
+.region-label{
+  font-family:"DM Mono",monospace;
+  font-size:0.72rem;
+  letter-spacing:0.2em;
+  text-transform:uppercase;
+  color:var(--accent);
+  font-weight:500;
+}
+.region-title{
+  font-family:"Playfair Display",serif;
+  font-weight:700;
+  font-style:italic;
+  font-size:2rem;
+  color:var(--ink);
+  line-height:1;
+}
+.region-count{
+  font-family:"DM Mono",monospace;
+  font-size:0.72rem;
+  letter-spacing:0.12em;
+  color:var(--muted);
+  margin-left:auto;
+}
+
+/* ---------- CARD GRID ---------- */
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(320px,1fr));
+  gap:20px;
+}
+.frac-card{
+  background:#fff;
+  border:1px solid var(--rule);
+  border-radius:3px;
+  padding:22px 24px 20px;
+  display:flex;
+  flex-direction:column;
+  position:relative;
+  transition:border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+}
+.frac-card.available{cursor:pointer}
+.frac-card.available:hover{
+  border-color:var(--accent);
+  transform:translateY(-2px);
+  box-shadow:0 6px 18px rgba(26,24,20,0.08);
+}
+.frac-card.coming{
+  background:#faf7f0;
+  opacity:0.78;
+}
+.card-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:14px;
+  margin-bottom:14px;
+}
+.card-title{
+  font-family:"Playfair Display",serif;
+  font-weight:700;
+  font-size:1.18rem;
+  line-height:1.2;
+  color:var(--ink);
+}
+.card-status{
+  font-family:"DM Mono",monospace;
+  font-size:0.65rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  white-space:nowrap;
+  padding-top:4px;
+}
+.frac-card.available .card-status{color:var(--teal)}
+.frac-card.coming .card-status{color:#a89478}
+.card-tags{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-bottom:16px;
+}
+.tag{
+  font-family:"DM Mono",monospace;
+  font-size:0.66rem;
+  letter-spacing:0.08em;
+  text-transform:uppercase;
+  background:var(--surface);
+  color:var(--muted);
+  padding:4px 10px;
+  border-radius:2px;
+  border:1px solid var(--rule);
+}
+.card-meta{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  margin-top:auto;
+  padding-top:14px;
+  border-top:1px dashed var(--rule);
+  font-family:"DM Mono",monospace;
+  font-size:0.7rem;
+  letter-spacing:0.04em;
+  color:var(--muted);
+}
+.card-link{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:flex-end;
+  justify-content:flex-end;
+  padding:0 24px 18px;
+  text-decoration:none;
+  color:transparent;
+  font-family:"DM Mono",monospace;
+  font-size:0.72rem;
+  letter-spacing:0.14em;
+  text-transform:uppercase;
+  transition:color 0.2s;
+}
+.frac-card.available .card-link{color:transparent}
+.frac-card.available:hover .card-link{color:var(--accent)}
+.card-link svg{width:14px;height:14px;margin-left:6px;vertical-align:middle}
+
+/* ---------- FOOTER ---------- */
+footer{
+  background:var(--ink);
+  color:#a89478;
+  padding:50px 0 40px;
+  margin-top:40px;
+  font-family:"DM Mono",monospace;
+  font-size:0.78rem;
+  text-align:center;
+  letter-spacing:0.08em;
+  line-height:1.7;
+}
+footer .accent-line{
+  color:var(--paper);
+  font-style:normal;
+  margin-bottom:8px;
+  letter-spacing:0.16em;
+}
+footer .sources{margin-top:14px;font-size:0.7rem}
+
+@media(max-width:780px){
+  h1{font-size:3rem}
+  header .container{grid-template-columns:1fr}
+  .stats{justify-content:flex-start}
+  .stat{text-align:left}
+  .region-title{font-size:1.5rem}
+  .region-header{flex-wrap:wrap;gap:10px}
+  .region-count{margin-left:0;flex-basis:100%}
+  .card-grid{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <div>
+      <div class="eyebrow">Orthopaedic Education · Resident Library</div>
+      <h1>Ortho<span class="accent">Ref</span></h1>
+      <p class="subtitle">A modular reference for orthopaedic trauma residents — sourced from Rockwood &amp; Green's Fractures in Adults (10th Edition) and AO Foundation Surgery Reference.</p>
+    </div>
+    <div class="stats">
+      <div class="stat">
+        <div class="stat-num">15</div>
+        <div class="stat-label">Modules Complete</div>
+      </div>
+      <div class="stat">
+        <div class="stat-num">6</div>
+        <div class="stat-label">Anatomic Regions</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="intro-strip">
+  <div class="container">
+    <div class="intro-text">
+      Each module covers <strong>Overview · Anatomy · Classification · Management · Approaches · Complications</strong> in a consistent six-tab layout, with interactive classification explorers and step-by-step approach walkthroughs.
+    </div>
+    <div class="source-tags">
+      <span class="source-tag accent">Rockwood &amp; Green 10e</span>
+      <span class="source-tag">AO Foundation</span>
+    </div>
+  </div>
+</div>
+
+<main>
+<div class="container">
+
+  <!-- ====== REGION 01 · SHOULDER GIRDLE ====== -->
+  <div class="region-block">
+    <div class="region-header">
+      <span class="region-label">Region 01</span>
+      <h2 class="region-title">Shoulder Girdle</h2>
+      <span class="region-count">3 of 4 available</span>
+    </div>
+    <div class="card-grid">
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Clavicle Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Allman</span>
+          <span class="tag">Neer</span>
+          <span class="tag">OTA/AO 15</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 34</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="clavicle_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Proximal Humerus Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Neer 4-part</span>
+          <span class="tag">OTA/AO 11</span>
+          <span class="tag">Hertel</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 36</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="proximal_humerus_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Scapular Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Ada-Miller</span>
+          <span class="tag">Ideberg</span>
+          <span class="tag">Glenoid</span>
+          <span class="tag">SSSC</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 33</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="scapula_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card coming">
+        <div class="card-top">
+          <div class="card-title">Glenohumeral Instability</div>
+          <div class="card-status">○ Coming Soon</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Bankart</span>
+          <span class="tag">Hill-Sachs</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 35</span>
+          <span>AO Foundation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== REGION 02 · ARM ====== -->
+  <div class="region-block">
+    <div class="region-header">
+      <span class="region-label">Region 02</span>
+      <h2 class="region-title">Arm</h2>
+      <span class="region-count">2 of 2 available</span>
+    </div>
+    <div class="card-grid">
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Humeral Shaft Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">OTA/AO 12</span>
+          <span class="tag">Holstein-Lewis</span>
+          <span class="tag">Radial Nerve</span>
+          <span class="tag">Sarmiento</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 37</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="humeral_shaft_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Distal Humerus Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">OTA/AO 13</span>
+          <span class="tag">Bicolumn</span>
+          <span class="tag">ORIF</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 39</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="distal_humerus_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== REGION 03 · ELBOW & FOREARM ====== -->
+  <div class="region-block">
+    <div class="region-header">
+      <span class="region-label">Region 03</span>
+      <h2 class="region-title">Elbow &amp; Forearm</h2>
+      <span class="region-count">2 of 4 available</span>
+    </div>
+    <div class="card-grid">
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Olecranon · Proximal Radius · Radial Head</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Schatzker</span>
+          <span class="tag">Mason</span>
+          <span class="tag">Mayo</span>
+          <span class="tag">OTA/AO 2U/2R</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 41</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="olecranon_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Forearm Shaft Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">OTA/AO 2R/2U</span>
+          <span class="tag">Galeazzi</span>
+          <span class="tag">Monteggia</span>
+          <span class="tag">DCP</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 42</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="forearm_shaft_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card coming">
+        <div class="card-top">
+          <div class="card-title">Elbow Dislocation &amp; Terrible Triad</div>
+          <div class="card-status">○ Coming Soon</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">LCL</span>
+          <span class="tag">Coronoid</span>
+          <span class="tag">Radial Head</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 40</span>
+          <span>AO Foundation</span>
+        </div>
+      </div>
+
+      <div class="frac-card coming">
+        <div class="card-top">
+          <div class="card-title">Distal Radius &amp; Ulna Fractures</div>
+          <div class="card-status">○ Coming Soon</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">OTA/AO 2R3</span>
+          <span class="tag">Frykman</span>
+          <span class="tag">DRUJ</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 43</span>
+          <span>AO Foundation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== REGION 04 · WRIST & HAND ====== -->
+  <div class="region-block">
+    <div class="region-header">
+      <span class="region-label">Region 04</span>
+      <h2 class="region-title">Wrist &amp; Hand</h2>
+      <span class="region-count">2 of 2 available</span>
+    </div>
+    <div class="card-grid">
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Carpal Fractures &amp; Dislocations</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Scaphoid</span>
+          <span class="tag">Herbert</span>
+          <span class="tag">Mayfield</span>
+          <span class="tag">PLD</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 44</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="carpal_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Hand Fractures &amp; Dislocations</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Metacarpal</span>
+          <span class="tag">Phalanx</span>
+          <span class="tag">Bennett</span>
+          <span class="tag">Rolando</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 45</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="hand_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== REGION 05 · SPINE ====== -->
+  <div class="region-block">
+    <div class="region-header">
+      <span class="region-label">Region 05</span>
+      <h2 class="region-title">Spine</h2>
+      <span class="region-count">2 of 2 available</span>
+    </div>
+    <div class="card-grid">
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Cervical Spine Fractures &amp; Dislocations</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Anderson-D'Alonzo</span>
+          <span class="tag">Levine-Edwards</span>
+          <span class="tag">SLIC</span>
+          <span class="tag">Allen-Ferguson</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 48</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="cervical_spine_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Thoracolumbar Fractures &amp; Dislocations</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">AOSpine</span>
+          <span class="tag">TLICS</span>
+          <span class="tag">Denis</span>
+          <span class="tag">Load-Sharing</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 49</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="thoracolumbar_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ====== REGION 06 · PELVIS, HIP & FEMUR ====== -->
+  <div class="region-block">
+    <div class="region-header">
+      <span class="region-label">Region 06</span>
+      <h2 class="region-title">Pelvis, Hip &amp; Femur</h2>
+      <span class="region-count">4 of 6 available</span>
+    </div>
+    <div class="card-grid">
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Pelvic Ring Injuries</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Young-Burgess</span>
+          <span class="tag">Tile/AO</span>
+          <span class="tag">Denis</span>
+          <span class="tag">APC · LC · VS</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 50</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="pelvic_ring_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Acetabulum Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Letournel</span>
+          <span class="tag">Judet</span>
+          <span class="tag">Roof Arc</span>
+          <span class="tag">KL · Ilioinguinal</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 51</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="acetabulum.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Intertrochanteric Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">OTA/AO 31-A</span>
+          <span class="tag">CMN</span>
+          <span class="tag">DHS</span>
+          <span class="tag">TAD</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 54</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="intertrochanteric_fractures.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card available">
+        <div class="card-top">
+          <div class="card-title">Hip Dislocations &amp; Femoral Head Fractures</div>
+          <div class="card-status">● Available</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Pipkin</span>
+          <span class="tag">Thompson-Epstein</span>
+          <span class="tag">MFCA</span>
+          <span class="tag">AVN</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 52</span>
+          <span>AO Foundation</span>
+        </div>
+        <a class="card-link" href="hip_dislocations.html">
+          Open <svg viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M1 5h8M6 2l3 3-3 3"/></svg>
+        </a>
+      </div>
+
+      <div class="frac-card coming">
+        <div class="card-top">
+          <div class="card-title">Femoral Neck Fractures</div>
+          <div class="card-status">○ Coming Soon</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">Garden</span>
+          <span class="tag">Pauwels</span>
+          <span class="tag">OTA/AO 31-B</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 53</span>
+          <span>AO Foundation</span>
+        </div>
+      </div>
+
+      <div class="frac-card coming">
+        <div class="card-top">
+          <div class="card-title">Femoral Shaft Fractures</div>
+          <div class="card-status">○ Coming Soon</div>
+        </div>
+        <div class="card-tags">
+          <span class="tag">OTA/AO 32</span>
+          <span class="tag">Antegrade IMN</span>
+          <span class="tag">Winquist</span>
+        </div>
+        <div class="card-meta">
+          <span>R&amp;G Ch. 57</span>
+          <span>AO Foundation</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</div>
+</main>
+
+<footer>
+  <div class="container">
+    <div class="accent-line">ORTHO·REF · ORTHOPAEDIC TRAUMA REFERENCE LIBRARY</div>
+    <div>Resident education · Boards · OITE · Clinical reference</div>
+    <div class="sources">Sources · Rockwood &amp; Green's Fractures in Adults, 10th Edition · AO Foundation Surgery Reference</div>
+  </div>
+</footer>
+
+</body>
+</html>
