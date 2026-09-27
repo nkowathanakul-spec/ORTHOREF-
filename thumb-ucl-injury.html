@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thumb UCL (MCP) — OrthoRef</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#ffffff; --ink:#17130e; --accent:#c0392b; --teal:#1a7a6e;
+  --muted:#5c5850; --rule:#e4dfd6; --highlight:#fff7e6; --warn:#8b4513;
+  --surface:#f6f3ee; --shadow:rgba(30,22,10,.08);
+}
+html[data-theme="dark"]{
+  --paper:#151310; --ink:#ece7de; --accent:#e0654f; --teal:#4db6a5;
+  --muted:#9c968b; --rule:#2e2a23; --highlight:#2a2417; --warn:#c98a4b;
+  --surface:#1d1a14; --shadow:rgba(0,0,0,.4);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font-family:'Source Serif 4',Georgia,serif; font-size:1.06rem; line-height:1.62;
+  -webkit-font-smoothing:antialiased; transition:background .3s,color .3s;
+}
+.wrap{max-width:960px; margin:0 auto; padding:0 22px}
+.lbl{font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.12em; font-size:.72rem}
+
+/* ---- Masthead ---- */
+header.mast{border-bottom:2px solid var(--ink); padding-top:30px}
+.mast .eyebrow{display:flex; justify-content:space-between; align-items:center; gap:12px; color:var(--muted)}
+.mast .eyebrow a{color:var(--muted); text-decoration:none}
+.mast h1{font-family:'Playfair Display',serif; font-weight:900; line-height:1.02;
+  font-size:clamp(2.2rem,6vw,3.7rem); margin:.35em 0 .12em; letter-spacing:-.01em}
+.mast .sub{font-style:italic; color:var(--muted); font-size:1.15rem; margin:0 0 .55em}
+.mast .strap{display:flex; flex-wrap:wrap; gap:8px 18px; padding:12px 0; border-top:1px solid var(--rule);
+  color:var(--muted); font-family:'DM Mono',monospace; font-size:.74rem; text-transform:uppercase; letter-spacing:.08em}
+.mast .strap b{color:var(--accent); font-weight:500}
+
+/* ---- Theme toggle ---- */
+.tgl{border:1px solid var(--rule); background:var(--surface); color:var(--ink);
+  font-family:'DM Mono',monospace; font-size:.7rem; text-transform:uppercase; letter-spacing:.1em;
+  padding:6px 11px; border-radius:20px; cursor:pointer}
+.tgl:hover{border-color:var(--accent)}
+
+/* ---- Tabs ---- */
+nav.tabs{position:sticky; top:0; z-index:40; background:var(--paper);
+  border-bottom:1px solid var(--rule); margin-top:0; box-shadow:0 2px 10px -8px var(--shadow)}
+nav.tabs .inner{max-width:960px; margin:0 auto; display:flex; gap:2px; overflow-x:auto; padding:0 12px; scrollbar-width:none}
+nav.tabs .inner::-webkit-scrollbar{display:none}
+nav.tabs button{flex:0 0 auto; background:none; border:none; color:var(--muted);
+  font-family:'DM Mono',monospace; text-transform:uppercase; letter-spacing:.08em; font-size:.76rem;
+  padding:14px 14px; cursor:pointer; border-bottom:2px solid transparent; white-space:nowrap}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button.on{color:var(--accent); border-bottom-color:var(--accent)}
+
+/* ---- Panels ---- */
+.panel{display:none; padding:30px 0 60px}
+.panel.on{display:block; animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+h2.sec{font-family:'Playfair Display',serif; font-weight:700; font-size:1.9rem; margin:.1em 0 .1em; letter-spacing:-.01em}
+h2.sec .n{font-family:'DM Mono',monospace; font-size:.9rem; color:var(--accent); vertical-align:super; margin-right:8px; letter-spacing:0}
+.dek{color:var(--muted); font-style:italic; margin:0 0 20px; font-size:1.08rem}
+h3.sub{font-family:'Playfair Display',serif; font-weight:700; font-size:1.22rem; margin:30px 0 8px}
+p{margin:.5em 0}
+ul{margin:.4em 0 .9em; padding-left:1.15em}
+li{margin:.32em 0}
+b.key,strong.key{font-weight:700; color:var(--accent)}
+em.hl{font-style:normal; background:var(--highlight); padding:0 3px; border-radius:2px}
+
+/* stat strip */
+.stats{display:flex; flex-wrap:wrap; gap:14px; margin:18px 0 6px}
+.stat{flex:1 1 150px; background:var(--surface); border:1px solid var(--rule); border-radius:8px; padding:14px 16px}
+.stat .big{font-family:'Playfair Display',serif; font-weight:900; font-size:1.9rem; color:var(--accent); line-height:1}
+.stat .cap{font-family:'DM Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.09em; color:var(--muted); margin-top:6px}
+
+/* callout */
+.call{border-left:3px solid var(--accent); background:var(--surface); padding:12px 16px; border-radius:0 8px 8px 0; margin:16px 0}
+.call.hy{border-left-color:var(--teal)}
+.call .tag{font-family:'DM Mono',monospace; font-size:.66rem; text-transform:uppercase; letter-spacing:.1em; color:var(--accent); display:block; margin-bottom:3px}
+.call.hy .tag{color:var(--teal)}
+
+/* source pill */
+.src{font-family:'DM Mono',monospace; font-size:.6rem; text-transform:uppercase; letter-spacing:.08em;
+  color:var(--muted); border:1px solid var(--rule); border-radius:12px; padding:1px 7px; margin-left:6px; white-space:nowrap}
+
+/* collapsible */
+details.coll{border:1px solid var(--rule); border-radius:8px; margin:12px 0; background:var(--surface)}
+details.coll>summary{cursor:pointer; list-style:none; padding:11px 15px; font-family:'DM Mono',monospace;
+  font-size:.76rem; text-transform:uppercase; letter-spacing:.07em; color:var(--ink); display:flex; align-items:center; gap:10px}
+details.coll>summary::-webkit-details-marker{display:none}
+details.coll>summary .pm{width:18px;height:18px;border:1px solid var(--accent);border-radius:50%;
+  display:inline-flex;align-items:center;justify-content:center;color:var(--accent);font-size:.9rem;flex:0 0 auto}
+details.coll[open]>summary .pm::after{content:"–"} details.coll:not([open])>summary .pm::after{content:"+"}
+details.coll .body{padding:2px 16px 14px}
+
+/* table */
+table{width:100%; border-collapse:collapse; margin:14px 0; font-size:.96rem}
+th,td{text-align:left; padding:9px 11px; border-bottom:1px solid var(--rule); vertical-align:top}
+th{font-family:'DM Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); background:var(--surface)}
+tr:last-child td{border-bottom:none}
+
+/* ---- Stress-test explorer ---- */
+.stx{border:1px solid var(--rule); border-radius:12px; overflow:hidden; margin:18px 0}
+.stx .head{background:var(--surface); padding:12px 16px; border-bottom:1px solid var(--rule);
+  font-family:'DM Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.09em; color:var(--muted)}
+.stx .toggles{display:flex; gap:0; border-bottom:1px solid var(--rule)}
+.stx .toggles button{flex:1; background:var(--paper); border:none; border-right:1px solid var(--rule); cursor:pointer;
+  padding:14px 10px; font-family:'DM Mono',monospace; font-size:.82rem; color:var(--muted); letter-spacing:.03em}
+.stx .toggles button:last-child{border-right:none}
+.stx .toggles button.on{background:var(--ink); color:var(--paper)}
+html[data-theme="dark"] .stx .toggles button.on{background:var(--accent); color:#fff}
+.stx .out{padding:18px 16px}
+.stx .out .iso{font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; margin-bottom:4px}
+.stx .out .iso b{color:var(--accent)}
+.stx .out p{margin:.3em 0; font-size:.98rem}
+
+/* ---- Classification explorer ---- */
+.clx .chips{display:flex; flex-wrap:wrap; gap:8px; margin:6px 0 16px}
+.clx .chips button{background:var(--surface); border:1px solid var(--rule); border-radius:22px; cursor:pointer;
+  padding:8px 15px; font-family:'DM Mono',monospace; font-size:.78rem; color:var(--ink); letter-spacing:.02em}
+.clx .chips button.on{background:var(--accent); border-color:var(--accent); color:#fff}
+.clx .detail{border:1px solid var(--rule); border-left:3px solid var(--accent); border-radius:0 8px 8px 0;
+  background:var(--surface); padding:16px 18px; min-height:120px}
+.clx .detail h4{font-family:'Playfair Display',serif; font-size:1.3rem; margin:0 0 2px}
+.clx .detail .meta{font-family:'DM Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); margin-bottom:10px}
+.clx .detail .row{display:flex; gap:10px; margin:7px 0; font-size:.97rem}
+.clx .detail .row .k{flex:0 0 96px; font-family:'DM Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); padding-top:2px}
+
+/* ---- Step walkthrough ---- */
+.walk{border:1px solid var(--rule); border-radius:12px; overflow:hidden; margin:18px 0}
+.walk .stage{background:var(--surface); padding:22px 20px; min-height:150px; border-bottom:1px solid var(--rule)}
+.walk .stage .step-n{font-family:'DM Mono',monospace; font-size:.7rem; letter-spacing:.1em; text-transform:uppercase; color:var(--accent)}
+.walk .stage h4{font-family:'Playfair Display',serif; font-size:1.35rem; margin:6px 0 8px}
+.walk .stage p{margin:.35em 0; font-size:.99rem}
+.walk .nav{display:flex; align-items:center; justify-content:space-between; padding:12px 16px; gap:14px}
+.walk .nav button{background:var(--ink); color:var(--paper); border:none; border-radius:20px; cursor:pointer;
+  font-family:'DM Mono',monospace; font-size:.72rem; text-transform:uppercase; letter-spacing:.08em; padding:9px 16px}
+.walk .nav button:disabled{opacity:.32; cursor:default}
+.walk .dots{display:flex; gap:8px}
+.walk .dots i{width:9px;height:9px;border-radius:50%;background:var(--rule);cursor:pointer;transition:.2s}
+.walk .dots i.on{background:var(--accent);transform:scale(1.25)}
+
+/* ---- figure / svg ---- */
+figure{margin:20px 0}
+figure .fbox{border:1px solid var(--rule); border-radius:10px; background:var(--surface); padding:16px; cursor:zoom-in}
+figure svg{display:block; width:100%; height:auto}
+figcaption{font-family:'DM Mono',monospace; font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; margin-top:8px; text-align:center}
+.svg-ink{stroke:var(--ink)} .svg-acc{stroke:var(--accent)} .svg-teal{stroke:var(--teal)}
+.svg-fill-ink{fill:var(--ink)} .svg-lbl{font-family:'DM Mono',monospace; font-size:11px; fill:var(--muted)}
+.svg-lbl-acc{font-family:'DM Mono',monospace; font-size:11px; fill:var(--accent)}
+
+/* lightbox */
+.lb{position:fixed; inset:0; background:rgba(10,8,4,.92); display:none; align-items:center; justify-content:center; z-index:100; padding:24px; cursor:zoom-out}
+.lb.on{display:flex}
+.lb .inner{max-width:900px; width:100%; background:#fff; border-radius:10px; padding:26px}
+.lb .cap{color:#eee; font-family:'DM Mono',monospace; font-size:.72rem; text-align:center; margin-top:14px; text-transform:uppercase; letter-spacing:.06em}
+.lb .x{position:absolute; top:20px; right:24px; background:none; border:1px solid #777; color:#eee; border-radius:50%; width:40px;height:40px; font-size:1.3rem; cursor:pointer}
+
+footer{border-top:2px solid var(--ink); padding:26px 0 46px; color:var(--muted); font-size:.9rem}
+footer .foot-t{font-family:'Playfair Display',serif; font-style:italic; color:var(--ink); font-size:1.05rem; margin-bottom:6px}
+footer .refs{font-family:'DM Mono',monospace; font-size:.68rem; text-transform:uppercase; letter-spacing:.06em; line-height:1.9}
+@media(max-width:560px){ body{font-size:1.02rem} .clx .detail .row{flex-direction:column;gap:2px} .clx .detail .row .k{flex:none} }
+</style>
+</head>
+<body>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span class="lbl">OrthoRef · Hand &amp; Wrist</span>
+      <button class="tgl" id="themeBtn">◐ Dark</button>
+    </div>
+    <h1>Thumb UCL Injury</h1>
+    <p class="sub">Ulnar collateral ligament of the metacarpophalangeal joint — "skier's" &amp; "gamekeeper's" thumb</p>
+    <div class="strap">
+      <span>Joint: <b>1st MCP</b></span>
+      <span>Ligament: <b>UCL</b></span>
+      <span>Mechanism: <b>Forced abduction</b></span>
+      <span>Key lesion: <b>Stener</b></span>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs">
+  <div class="inner" id="tabbar">
+    <button data-t="ov" class="on">Overview</button>
+    <button data-t="an">Anatomy</button>
+    <button data-t="px">Physical Exam</button>
+    <button data-t="cl">Classification</button>
+    <button data-t="mg">Management</button>
+    <button data-t="ap">Approach</button>
+    <button data-t="cx">Complications</button>
+  </div>
+</nav>
+
+<main class="wrap">
+
+<!-- OVERVIEW -->
+<section class="panel on" id="ov">
+  <h2 class="sec"><span class="n">01</span>Overview</h2>
+  <p class="dek">The thumb MCP is one of the most commonly injured joints in the hand, and the UCL is the structure most often torn.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="big">UCL</div><div class="cap">Most-injured MCP structure</div></div>
+    <div class="stat"><div class="big">Abduction</div><div class="cap">Radially-driven force in pinch/grip</div></div>
+    <div class="stat"><div class="big">Stener</div><div class="cap">Aponeurosis blocks healing → surgery</div></div>
+  </div>
+
+  <p>The UCL resists radial (valgus) deviation of the thumb during pinch and grasp, so it fails when an abduction/radially-directed load is applied — classically a skier falling onto a planted pole. <span class="src">R&amp;G Ch.45</span></p>
+  <ul>
+    <li><b class="key">Skier's thumb</b> = the acute injury; <b class="key">gamekeeper's thumb</b> historically the chronic/attritional form.</li>
+    <li>Radial collateral (RCL) injuries and frank dislocations are less common; RCL fails with an ulnar-directed force.</li>
+    <li>If missed, a complete tear leads to <em class="hl">chronic instability and weakness of pinch</em>. <span class="src">AO</span></li>
+  </ul>
+
+  <div class="call hy">
+    <span class="tag">High-yield</span>
+    Clinical examination remains the decision-making gold standard. MRI tends to <b>underestimate</b> the injury; ultrasound is accurate but operator-dependent. <span class="src">R&amp;G Ch.45</span>
+  </div>
+
+  <details class="coll">
+    <summary><span class="pm"></span>Naming &amp; terminology</summary>
+    <div class="body">
+      <p>"Skier's thumb" describes the acute abduction rupture; "gamekeeper's thumb" was originally coined for chronic attritional laxity from repetitive stress. In current usage the terms are often applied interchangeably, but the acute-versus-chronic distinction matters because chronic tears may be retracted or attenuated and less amenable to direct repair.</p>
+    </div>
+  </details>
+</section>
+
+<!-- ANATOMY -->
+<section class="panel" id="an">
+  <h2 class="sec"><span class="n">02</span>Anatomy</h2>
+  <p class="dek">Two ligaments, one aponeurosis — the interplay decides whether a tear can heal on its own.</p>
+
+  <h3 class="sub">The UCL complex</h3>
+  <ul>
+    <li><b class="key">Proper collateral ligament (pUCL)</b> — runs from the metacarpal head to the base of the proximal phalanx; <em class="hl">taut in flexion</em>, the primary restraint to valgus.</li>
+    <li><b class="key">Accessory collateral ligament</b> — volar to the proper ligament, blends with the volar plate and sesamoid; <em class="hl">taut in extension</em>.</li>
+  </ul>
+  <p>Because the two components tighten in different positions, stability must be tested in <b>both</b> flexion and extension (see Physical Exam).</p>
+
+  <h3 class="sub">The adductor aponeurosis — why the Stener lesion exists</h3>
+  <p>On the ulnar side of the MCP joint, the transverse and oblique fibers of the <b class="key">adductor pollicis aponeurosis</b> (with some muscle fibers) insert into the EPL tendon and <em class="hl">overlie the UCL</em>. <span class="src">AO</span> When the ligament ruptures off the phalangeal base and retracts, its stump can flip <b>dorsal/superficial</b> to this aponeurosis — the aponeurosis then interposes between the torn ends and prevents healing. <span class="src">AO · R&amp;G Ch.45</span></p>
+
+  <figure>
+    <div class="fbox" data-lb="anat">
+      <svg viewBox="0 0 640 260" role="img" aria-label="Schematic of the thumb MCP joint with UCL and overlying adductor aponeurosis">
+        <!-- metacarpal -->
+        <rect x="60" y="120" width="230" height="50" rx="16" fill="none" class="svg-ink" stroke-width="2.5"/>
+        <!-- metacarpal head -->
+        <circle cx="300" cy="145" r="34" fill="none" class="svg-ink" stroke-width="2.5"/>
+        <!-- proximal phalanx -->
+        <rect x="360" y="122" width="220" height="46" rx="15" fill="none" class="svg-ink" stroke-width="2.5"/>
+        <!-- proper UCL (flexion restraint) -->
+        <path d="M300 118 Q345 96 372 126" fill="none" class="svg-acc" stroke-width="3"/>
+        <text x="330" y="86" class="svg-lbl-acc" text-anchor="middle">pUCL (taut in flexion)</text>
+        <!-- accessory UCL -->
+        <path d="M300 172 Q346 196 372 166" fill="none" class="svg-teal" stroke-width="3" stroke-dasharray="6 5"/>
+        <text x="330" y="222" class="svg-lbl" text-anchor="middle" style="fill:var(--teal)">accessory UCL + volar plate</text>
+        <!-- adductor aponeurosis band overlying -->
+        <path d="M250 108 L410 108" class="svg-ink" stroke-width="1.4" stroke-dasharray="2 4" fill="none"/>
+        <text x="330" y="103" class="svg-lbl" text-anchor="middle">adductor aponeurosis (overlies UCL)</text>
+        <text x="120" y="150" class="svg-lbl" text-anchor="middle">1st metacarpal</text>
+        <text x="500" y="150" class="svg-lbl" text-anchor="middle">proximal phalanx</text>
+        <text x="300" y="150" class="svg-lbl" text-anchor="middle" style="font-size:9px">MCP</text>
+      </svg>
+    </div>
+    <figcaption>Schematic — UCL complex &amp; overlying adductor aponeurosis (click to enlarge)</figcaption>
+  </figure>
+</section>
+
+<!-- PHYSICAL EXAM -->
+<section class="panel" id="px">
+  <h2 class="sec"><span class="n">03</span>Physical Exam</h2>
+  <p class="dek">Valgus stress in two positions, read against the uninjured thumb.</p>
+
+  <ul>
+    <li><b class="key">Tenderness</b> along the ulnar aspect of the MCP joint.</li>
+    <li><b class="key">Valgus stress testing</b> performed in two positions to isolate each part of the complex.</li>
+  </ul>
+
+  <div class="stx">
+    <div class="head">Stress-test explorer — tap a position</div>
+    <div class="toggles" id="stxTog">
+      <button data-p="ext" class="on">Full extension</button>
+      <button data-p="flx">40° of flexion</button>
+    </div>
+    <div class="out" id="stxOut"></div>
+  </div>
+
+  <figure>
+    <div class="fbox" data-lb="stress">
+      <svg viewBox="0 0 560 240" role="img" aria-label="Valgus stress test of the thumb MCP joint showing angle of joint laxity">
+        <!-- metacarpal fixed -->
+        <rect x="70" y="120" width="180" height="42" rx="14" fill="none" class="svg-ink" stroke-width="2.5"/>
+        <circle cx="255" cy="141" r="26" fill="none" class="svg-ink" stroke-width="2.5"/>
+        <!-- neutral phalanx (dashed) -->
+        <rect x="300" y="122" width="180" height="38" rx="13" fill="none" class="svg-ink" stroke-width="1.4" stroke-dasharray="5 5" opacity=".5"/>
+        <!-- deviated phalanx (valgus) -->
+        <g transform="rotate(-24 288 141)">
+          <rect x="300" y="122" width="180" height="38" rx="13" fill="none" class="svg-acc" stroke-width="2.5"/>
+        </g>
+        <!-- angle arc -->
+        <path d="M330 141 A44 44 0 0 0 300 100" fill="none" class="svg-acc" stroke-width="1.6"/>
+        <text x="356" y="112" class="svg-lbl-acc">angle of joint laxity</text>
+        <!-- force arrow -->
+        <line x1="470" y1="70" x2="410" y2="104" class="svg-acc" stroke-width="2"/>
+        <polygon points="410,104 420,98 421,110" class="svg-fill-ink" style="fill:var(--accent)"/>
+        <text x="475" y="64" class="svg-lbl-acc">valgus / abduction force</text>
+        <!-- counterpressure -->
+        <line x1="140" y1="196" x2="200" y2="168" class="svg-ink" stroke-width="1.6"/>
+        <text x="80" y="210" class="svg-lbl">counterpressure</text>
+        <text x="150" y="150" class="svg-lbl" text-anchor="middle">1st MC</text>
+      </svg>
+    </div>
+    <figcaption>Valgus stress at the thumb MCP joint (click to enlarge)</figcaption>
+  </figure>
+
+  <div class="call">
+    <span class="tag">Positivity — indicates a complete tear</span>
+    <ul style="margin-bottom:0">
+      <li>Greater than <b class="key">30°</b> of valgus laxity, <b>or</b></li>
+      <li>Increase of more than <b class="key">15°</b> compared to the contralateral uninjured thumb,</li>
+      <li>combined with <em class="hl">loss of a firm endpoint</em> → complete (Grade III) rupture.</li>
+    </ul>
+  </div>
+
+  <div class="call hy">
+    <span class="tag">Practical tip</span>
+    Obtain radiographs <b>before</b> stressing to exclude an avulsion fragment off the ulnar phalangeal base — stressing a bony avulsion risks displacing it. Baseline joint laxity varies widely, so always compare to the other thumb. <span class="src">R&amp;G Ch.45</span>
+  </div>
+
+  <details class="coll">
+    <summary><span class="pm"></span>Why the two positions?</summary>
+    <div class="body">
+      <p>In <b>full extension</b>, the volar plate and accessory collateral ligament are the taut structures, so laxity here reflects those. In <b>~40° of flexion</b>, the volar plate and accessory ligament relax and the proper UCL becomes the primary restraint — laxity in flexion therefore isolates a proper-UCL tear. Testing both avoids missing an isolated proper-ligament injury that looks stable in extension.</p>
+    </div>
+  </details>
+</section>
+
+<!-- CLASSIFICATION -->
+<section class="panel" id="cl">
+  <h2 class="sec"><span class="n">04</span>Classification</h2>
+  <p class="dek">Rockwood &amp; Green grade ligament injury by laxity and endpoint; the Stener lesion is the surgical subset.</p>
+
+  <div class="clx">
+    <div class="chips" id="clxChips">
+      <button data-c="1" class="on">Grade I</button>
+      <button data-c="2">Grade II</button>
+      <button data-c="3">Grade III</button>
+      <button data-c="s">Stener lesion</button>
+    </div>
+    <div class="detail" id="clxDetail"></div>
+  </div>
+
+  <div class="call">
+    <span class="tag">The line that matters</span>
+    Grade I–II (endpoint present) generally heal with immobilization. Grade III with a Stener lesion cannot appose and heal on its own — it is a surgical injury. <span class="src">R&amp;G Ch.45 · AO</span>
+  </div>
+</section>
+
+<!-- MANAGEMENT -->
+<section class="panel" id="mg">
+  <h2 class="sec"><span class="n">05</span>Management</h2>
+  <p class="dek">Immobilize what will heal; repair what the aponeurosis has blocked.</p>
+
+  <table>
+    <thead><tr><th>Injury</th><th>Treatment</th><th>Immobilization</th></tr></thead>
+    <tbody>
+      <tr><td>Grade I–II (stable, firm endpoint)</td><td>Thumb spica immobilization, then therapy</td><td>~4 weeks</td></tr>
+      <tr><td>Grade III / Stener lesion</td><td>Operative repair — healing is blocked</td><td>Spica post-op, protect from valgus</td></tr>
+      <tr><td>Displaced bony avulsion</td><td>Fixation: lag screw, cerclage compression wiring, or anchor suture (comminuted fragments excised)</td><td>Per fixation</td></tr>
+      <tr><td>Chronic / retracted tear</td><td>Reconstruction (tendon graft/transfer) or MCP arthrodesis in the arthritic joint</td><td>Per procedure</td></tr>
+    </tbody>
+  </table>
+
+  <h3 class="sub">Operative repair — how it goes</h3>
+  <div class="walk">
+    <div class="stage" id="walkStage"></div>
+    <div class="nav">
+      <button id="walkPrev">‹ Prev</button>
+      <div class="dots" id="walkDots"></div>
+      <button id="walkNext">Next ›</button>
+    </div>
+  </div>
+
+  <div class="call">
+    <span class="tag">AO — reattachment options</span>
+    For the displaced ligament, AO describes two techniques: <b class="key">suture anchors</b> or <b class="key">bone tunneling</b>. Avulsion fractures are handled like other proximal phalangeal base fractures. <span class="src">AO</span>
+  </div>
+
+  <details class="coll">
+    <summary><span class="pm"></span>Nonoperative details for a complete tear</summary>
+    <div class="body">
+      <p>Operative repair is standard for a complete tear/Stener lesion because interposed aponeurosis prevents healing. Nonoperative management is reserved for patients whose comorbidities preclude surgery — spica or hinged bracing in slight ulnar deviation and flexion for roughly 4–8 weeks, then graded therapy — with the understanding that persistent instability is common when a true Stener lesion is treated closed.</p>
+    </div>
+  </details>
+</section>
+
+<!-- APPROACH -->
+<section class="panel" id="ap">
+  <h2 class="sec"><span class="n">06</span>Approach</h2>
+  <p class="dek">Dorsoulnar approach to the thumb MCP joint. <span class="src">AO</span></p>
+
+  <h3 class="sub">Indications</h3>
+  <ul>
+    <li>Avulsion of the UCL attachment at the proximal phalangeal base (Stener's / gamekeeper's / skier's thumb).</li>
+    <li>Intra-articular fractures of the ulnar margin of the first metacarpal head.</li>
+    <li>Avulsion fractures of the base of the proximal phalanx.</li>
+  </ul>
+
+  <h3 class="sub">Key steps &amp; safety</h3>
+  <ul>
+    <li>Incision starting dorsally ~<b class="key">1 cm proximal</b> to the MCP joint, curving palmarly around the ulnar aspect to ~1 cm distal; oblique or lazy-S shape.</li>
+    <li>Identify and protect divisions of the <b class="key">dorsal sensory branch of the radial nerve</b> with a vessel loop.</li>
+    <li>Divide the adductor aponeurosis to expose the retracted ligament; repair, then close the aponeurosis and capsule.</li>
+  </ul>
+
+  <div class="call hy">
+    <span class="tag">Watch-out</span>
+    The dorsal sensory branch of the radial nerve runs superficially in the subcutaneous tissue over this region — a neuroma here is a preventable complication. <span class="src">AO</span>
+  </div>
+</section>
+
+<!-- COMPLICATIONS -->
+<section class="panel" id="cx">
+  <h2 class="sec"><span class="n">07</span>Complications &amp; Associated Injuries</h2>
+  <p class="dek">Most are the price of a missed or under-treated tear.</p>
+
+  <h3 class="sub">Associated injuries <span class="src">R&amp;G Ch.45</span></h3>
+  <ul>
+    <li>Articular <b>avulsion / shear fractures</b> (the most common association).</li>
+    <li>Capsular disruption.</li>
+    <li>Sesamoid fractures.</li>
+    <li>Adjacent tendon rupture.</li>
+  </ul>
+
+  <h3 class="sub">Complications</h3>
+  <ul>
+    <li><b class="key">Chronic instability &amp; weak pinch</b> — the hallmark of a missed complete tear. <span class="src">AO</span></li>
+    <li>Persistent instability after closed treatment of a true Stener lesion.</li>
+    <li>Dorsal radial sensory neuroma (surgical).</li>
+    <li>MCP stiffness; late post-traumatic arthritis in chronic/neglected injuries.</li>
+  </ul>
+
+  <div class="call">
+    <span class="tag">Bottom line</span>
+    The whole assessment exists to answer one question: is there a complete tear (± Stener lesion) that needs the OR, or a partial tear that will heal in a splint?
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="foot-t">OrthoRef — Thumb UCL (MCP) injury</div>
+    <div class="refs">
+      Sources: Rockwood &amp; Green, Fractures in Adults, 10th ed., Ch. 45 (Hand Fractures &amp; Dislocations) · AO Surgery Reference (Thumb — skier's thumb; dorsoulnar approach to the MCP joint) · Physical-exam thresholds per lecture material, consistent with R&amp;G grading.
+    </div>
+  </div>
+</footer>
+
+<div class="lb" id="lb">
+  <button class="x" id="lbX" aria-label="Close">×</button>
+  <div class="inner" id="lbInner"></div>
+</div>
+
+<script type="application/json" id="appData">
+{
+  "stress": {
+    "ext": {
+      "iso": "Isolates the volar plate + accessory UCL",
+      "note": "In full extension the volar plate and accessory collateral ligament are taut, so laxity here reflects those structures."
+    },
+    "flx": {
+      "iso": "Isolates the proper UCL",
+      "note": "At about 40 degrees of flexion the accessory ligament relaxes and the proper UCL becomes the primary valgus restraint \u2014 laxity here points to a proper-ligament tear."
+    }
+  },
+  "classes": {
+    "1": {
+      "title": "Grade I",
+      "meta": "Sprain \u2014 no laxity",
+      "rows": [
+        ["Findings", "Pain and/or tenderness over the ligament, but no laxity on stress."],
+        ["Meaning", "Ligament in continuity; stable joint."],
+        ["Treatment", "Immobilization and therapy; heals reliably."]
+      ]
+    },
+    "2": {
+      "title": "Grade II",
+      "meta": "Partial rupture \u2014 firm endpoint",
+      "rows": [
+        ["Findings", "Some laxity but with a firm endpoint on valgus stress."],
+        ["Meaning", "Partial tear; the ligament still checks the joint."],
+        ["Treatment", "Immobilization (~4 weeks); generally non-operative."]
+      ]
+    },
+    "3": {
+      "title": "Grade III",
+      "meta": "Complete rupture \u2014 no endpoint",
+      "rows": [
+        ["Findings", "Significant laxity with no firm endpoint. Positivity: >30\u00b0 laxity, or >15\u00b0 more than the other thumb."],
+        ["Meaning", "Complete tear. May or may not be a Stener lesion \u2014 examine both flexion and extension."],
+        ["Treatment", "Operative repair, especially when a Stener lesion is present."]
+      ]
+    },
+    "s": {
+      "title": "Stener lesion",
+      "meta": "The surgical subset of a complete tear",
+      "rows": [
+        ["Definition", "The ruptured UCL stump retracts dorsal/superficial to the adductor aponeurosis, which then interposes between the torn ends."],
+        ["Why it matters", "Interposed aponeurosis prevents apposition and healing \u2014 the tear cannot heal closed."],
+        ["Treatment", "Operative repair (suture anchor or bone tunneling) to restore the ligament to its anatomic position."]
+      ]
+    }
+  },
+  "steps": [
+    {"t": "Dorsoulnar exposure", "b": ["Oblique / lazy-S incision ~1 cm proximal to the MCP joint, curving around the ulnar aspect to ~1 cm distal.", "Protect divisions of the dorsal sensory branch of the radial nerve with a vessel loop."]},
+    {"t": "Identify the lesion", "b": ["Expose the adductor aponeurosis overlying the UCL.", "Confirm whether the retracted ligament stump lies superficial to the aponeurosis (Stener lesion)."]},
+    {"t": "Divide the aponeurosis", "b": ["Incise the adductor aponeurosis to reach and mobilize the retracted UCL.", "Deliver the ligament back to its anatomic footprint on the phalangeal base."]},
+    {"t": "Reattach the ligament", "b": ["Prepare the insertion on the proximal phalanx base.", "Fix with a suture anchor (or bone tunneling); a bony avulsion may take a lag screw, cerclage wire, or anchor."]},
+    {"t": "Protect & rehab", "b": ["Confirm valgus stability in extension and flexion; close aponeurosis and capsule.", "Thumb spica protecting against abduction/valgus, then graded therapy."]}
+  ]
+}
+</script>
+
+<script>
+(function(){
+  "use strict";
+  var DATA = JSON.parse(document.getElementById('appData').textContent);
+
+  /* ---- theme ---- */
+  var root = document.documentElement, tb = document.getElementById('themeBtn');
+  function setTheme(t){ root.setAttribute('data-theme', t); tb.textContent = (t==='dark') ? '◑ Light' : '◐ Dark';
+    try{ localStorage.setItem('orthoref-theme', t); }catch(e){} }
+  var saved='light'; try{ saved = localStorage.getItem('orthoref-theme') || 'light'; }catch(e){}
+  setTheme(saved);
+  tb.addEventListener('click', function(){ setTheme(root.getAttribute('data-theme')==='dark'?'light':'dark'); });
+
+  /* ---- tabs ---- */
+  var bar = document.getElementById('tabbar');
+  bar.addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    var t = b.getAttribute('data-t');
+    Array.prototype.forEach.call(bar.querySelectorAll('button'), function(x){ x.classList.toggle('on', x===b); });
+    Array.prototype.forEach.call(document.querySelectorAll('.panel'), function(p){ p.classList.toggle('on', p.id===t); });
+    window.scrollTo({top:0, behavior:'smooth'});
+  });
+
+  /* ---- stress-test explorer ---- */
+  var stxOut = document.getElementById('stxOut'), stxTog = document.getElementById('stxTog');
+  function renderStx(p){
+    var d = DATA.stress[p];
+    stxOut.innerHTML = '<div class="iso"><b>'+d.iso+'</b></div><p>'+d.note+'</p>';
+  }
+  stxTog.addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    Array.prototype.forEach.call(stxTog.querySelectorAll('button'), function(x){ x.classList.toggle('on', x===b); });
+    renderStx(b.getAttribute('data-p'));
+  });
+  renderStx('ext');
+
+  /* ---- classification explorer ---- */
+  var clxChips = document.getElementById('clxChips'), clxDetail = document.getElementById('clxDetail');
+  function renderClx(c){
+    var d = DATA.classes[c]; if(!d) return;
+    var html = '<h4>'+d.title+'</h4><div class="meta">'+d.meta+'</div>';
+    d.rows.forEach(function(r){ html += '<div class="row"><div class="k">'+r[0]+'</div><div>'+r[1]+'</div></div>'; });
+    clxDetail.innerHTML = html;
+  }
+  clxChips.addEventListener('click', function(e){
+    var b = e.target.closest('button'); if(!b) return;
+    Array.prototype.forEach.call(clxChips.querySelectorAll('button'), function(x){ x.classList.toggle('on', x===b); });
+    renderClx(b.getAttribute('data-c'));
+  });
+  renderClx('1');
+
+  /* ---- step walkthrough ---- */
+  var steps = DATA.steps, wi = 0;
+  var stage = document.getElementById('walkStage'), dots = document.getElementById('walkDots');
+  var wPrev = document.getElementById('walkPrev'), wNext = document.getElementById('walkNext');
+  steps.forEach(function(_,i){ var d=document.createElement('i'); d.setAttribute('data-i',i); dots.appendChild(d); });
+  function renderWalk(){
+    var s = steps[wi];
+    var html = '<div class="step-n">Step '+(wi+1)+' / '+steps.length+'</div><h4>'+s.t+'</h4>';
+    s.b.forEach(function(x){ html += '<p>'+x+'</p>'; });
+    stage.innerHTML = html;
+    Array.prototype.forEach.call(dots.children, function(d,i){ d.classList.toggle('on', i===wi); });
+    wPrev.disabled = (wi===0); wNext.disabled = (wi===steps.length-1);
+  }
+  wPrev.addEventListener('click', function(){ if(wi>0){wi--; renderWalk();} });
+  wNext.addEventListener('click', function(){ if(wi<steps.length-1){wi++; renderWalk();} });
+  dots.addEventListener('click', function(e){ var d=e.target.closest('i'); if(!d) return; wi=+d.getAttribute('data-i'); renderWalk(); });
+  renderWalk();
+
+  /* ---- lightbox ---- */
+  var lb = document.getElementById('lb'), lbInner = document.getElementById('lbInner'), lbX = document.getElementById('lbX');
+  Array.prototype.forEach.call(document.querySelectorAll('[data-lb]'), function(box){
+    box.addEventListener('click', function(){
+      lbInner.innerHTML = box.innerHTML;
+      lb.classList.add('on');
+    });
+  });
+  function closeLb(){ lb.classList.remove('on'); lbInner.innerHTML=''; }
+  lb.addEventListener('click', function(e){ if(e.target===lb || e.target===lbX) closeLb(); });
+  lbX.addEventListener('click', closeLb);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeLb(); });
+})();
+</script>
+</body>
+</html>
